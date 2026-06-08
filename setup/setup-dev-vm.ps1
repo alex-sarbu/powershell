@@ -289,7 +289,7 @@ Write-Log "NEXT STEPS:"
 Write-Log "  1. Reboot to finalise WSL 2, Hyper-V, and PATH changes."
 Write-Log "  2. Set git identity (see warnings above)."
 Write-Log "  3. Run 'az login' to authenticate with Azure."
-Write-Log "  4. Run 'podman machine init && podman machine start' for Podman."
+Write-Log "  4. Run 'podman machine init --rootful --now && podman machine start' for Podman."
 Write-Log "  5. Open Windows Terminal and select Ubuntu to complete WSL setup."
 Write-Log ""
 Write-Log "Optional - re-run this script after reboot to install VS Code extensions"
@@ -301,7 +301,8 @@ New-Item -Path "$env:APPDATA\containers" -ItemType Directory -Force
 [machine]
 provider = "hyperv"
 "@ | Set-Content "$env:APPDATA\containers\containers.conf"
-podman machine init --rootful --now
+# Run after reboot:
+# podman machine init --rootful --now
 
 $reboot = Read-Host "`nReboot now to apply all changes? (y/N)"
 if ($reboot -match '^[Yy]$') {
