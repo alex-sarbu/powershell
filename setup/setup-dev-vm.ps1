@@ -295,6 +295,14 @@ Write-Log ""
 Write-Log "Optional - re-run this script after reboot to install VS Code extensions"
 Write-Log "if 'code' was not yet in PATH during first run."
 
+# Bonus: Configure Podman for Hyper-V backend (better performance than WSL 2 on Windows 11)
+New-Item -Path "$env:APPDATA\containers" -ItemType Directory -Force
+@"
+[machine]
+provider = "hyperv"
+"@ | Set-Content "$env:APPDATA\containers\containers.conf"
+podman machine init --rootful --now
+
 $reboot = Read-Host "`nReboot now to apply all changes? (y/N)"
 if ($reboot -match '^[Yy]$') {
     Write-Log "Rebooting..." 'WARN'
