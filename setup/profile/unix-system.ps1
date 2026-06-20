@@ -8,7 +8,7 @@ function Format-HumanBytes {
     else                    { "${Bytes}B" }
 }
 
-# which — print the full path of a command
+# which - print the full path of a command
 function which {
     param([Parameter(Mandatory, Position=0)][string]$Command)
     $cmd = Get-Command $Command -ErrorAction SilentlyContinue
@@ -16,7 +16,7 @@ function which {
     else       { Write-Error "which: $Command not found" }
 }
 
-# df — disk space for all FileSystem drives
+# df - disk space for all FileSystem drives
 # -h  human-readable sizes
 function df {
     param([Alias('h')][switch]$HumanReadable)
@@ -32,7 +32,7 @@ function df {
         @{N='Mounted on';  E={ $_.Root }}
 }
 
-# du — disk usage for a directory tree
+# du - disk usage for a directory tree
 # -h  human-readable sizes    -s  summary (total only)
 function du {
     param(
@@ -64,20 +64,20 @@ function du {
     }
 }
 
-# uptime — time since last boot
+# uptime - time since last boot
 function uptime {
     $span = (Get-Date) - (Get-CimInstance Win32_OperatingSystem).LastBootUpTime
     'up {0} days, {1:D2}:{2:D2}:{3:D2}' -f $span.Days, $span.Hours, $span.Minutes, $span.Seconds
 }
 
-# env — list all environment variables, or print one by name
+# env - list all environment variables, or print one by name
 function env {
     param([Parameter(Position=0)][string]$Name)
     if ($Name) { [System.Environment]::GetEnvironmentVariable($Name) }
     else        { Get-ChildItem Env: | Sort-Object Name | Format-Table -AutoSize }
 }
 
-# export — set an environment variable in the current session
+# export - set an environment variable in the current session
 # Usage: export NAME=VALUE
 function export {
     param([Parameter(Mandatory, Position=0)][string]$Assignment)
@@ -88,7 +88,7 @@ function export {
     }
 }
 
-# pkill — kill all processes matching a name
+# pkill - kill all processes matching a name
 function pkill {
     param([Parameter(Mandatory, Position=0)][string]$Name)
     $procs = Get-Process -Name $Name -ErrorAction SilentlyContinue
@@ -96,7 +96,7 @@ function pkill {
     else         { Write-Warning "pkill: no process named '$Name'" }
 }
 
-# pgrep — list processes whose name matches a regex
+# pgrep - list processes whose name matches a regex
 function pgrep {
     param([Parameter(Mandatory, Position=0)][string]$Pattern)
     Get-Process | Where-Object { $_.Name -match $Pattern } |

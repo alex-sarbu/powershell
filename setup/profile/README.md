@@ -1,7 +1,7 @@
-# PowerShell Profile — Unix-style Commands
+# PowerShell Profile - Unix-style Commands
 
 Auto-loaded on shell startup via `setup/Install-Profile.ps1`.  
-Scripts are dot-sourced in order: `unix-file.ps1` → `unix-system.ps1` → `unix-network.ps1`.
+Scripts are dot-sourced in order: `unix-file.ps1` -> `unix-system.ps1` -> `unix-network.ps1` -> `navigation.ps1`.
 
 ---
 
@@ -60,7 +60,7 @@ cat file.txt | wc -l    # from pipeline
 ---
 
 ### `sed`
-Stream editor — find-and-replace using regex. Supports any single-character delimiter.
+Stream editor - find-and-replace using regex. Supports any single-character delimiter.
 
 ```powershell
 'hello world' | sed 's/world/PowerShell/'     # basic replace
@@ -132,7 +132,7 @@ df          # sizes in 1K-blocks
 df -h       # human-readable (K/M/G/T)
 ```
 
-**Limitations:** Shows PowerShell `PSDrive` entries only — network shares appear only if mapped as a drive. `Use%` can show `N/A` for drives reporting 0 total size (e.g. virtual drives).
+**Limitations:** Shows PowerShell `PSDrive` entries only - network shares appear only if mapped as a drive. `Use%` can show `N/A` for drives reporting 0 total size (e.g. virtual drives).
 
 ---
 
@@ -179,7 +179,7 @@ export DEBUG=true
 export MY_TOKEN=abc123
 ```
 
-**Limitations:** Session-scoped only — does not persist after the shell closes. Use `[System.Environment]::SetEnvironmentVariable(name, value, 'User')` to persist.
+**Limitations:** Session-scoped only - does not persist after the shell closes. Use `[System.Environment]::SetEnvironmentVariable(name, value, 'User')` to persist.
 
 ---
 
@@ -234,7 +234,7 @@ curl --version
 ```
 
 **Note:** Implemented as a plain function (no `[CmdletBinding()]`) so PowerShell never silently consumes arguments. Without this, `-Verbose` is stripped before reaching `$args`, and a `Set-Alias` passes it raw to `curl.exe`, where `-V` means `--version`.  
-**Limitations:** Requires `curl.exe` on `PATH` (ships with Windows 10 1803+). `-Headers` (hashtable) is not mapped — use native `-H 'Name: Value'` instead.
+**Limitations:** Requires `curl.exe` on `PATH` (ships with Windows 10 1803+). `-Headers` (hashtable) is not mapped - use native `-H 'Name: Value'` instead.
 
 ---
 
@@ -273,7 +273,7 @@ dig example.com TXT       # text records
 dig example.com NS        # name servers
 ```
 
-**Limitations:** Wraps `Resolve-DnsName` — output format differs from BIND `dig`. No `+short` or custom resolver support.
+**Limitations:** Wraps `Resolve-DnsName` - output format differs from BIND `dig`. No `+short` or custom resolver support.
 
 ---
 
@@ -285,7 +285,68 @@ ports           # all TCP/UDP entries
 ports 8080      # filter to a specific port number
 ```
 
-**Limitations:** Parses `netstat -ano` text output — may miss entries on busy systems or show stale TIME_WAIT entries.
+**Limitations:** Parses `netstat -ano` text output - may miss entries on busy systems or show stale TIME_WAIT entries.
+
+---
+
+## Navigation (`navigation.ps1` + `cd-aliases.ps1`)
+
+Persistent `cd` shortcuts, similar to bash aliases like `alias myrepo.home="cd /path/to/repo"`.  
+Aliases are stored as PowerShell functions in `cd-aliases.ps1` (auto-generated, do not edit by hand) and loaded on every shell start.
+
+---
+
+### `Quick-CdAlias`
+Register the current directory as a named navigation alias. The alias is active immediately and persists across sessions.
+
+```powershell
+cd C:\dev\ps\my-project
+Quick-CdAlias my-project        # creates my-project.home
+
+# From anywhere afterwards:
+my-project.home                 # jumps to C:\dev\ps\my-project
+```
+
+The alias name may contain letters, numbers, hyphens, and underscores. The `.home` suffix is always appended automatically.
+
+---
+
+### `Remove-CdAlias`
+Delete a navigation alias by name (without the `.home` suffix).
+
+```powershell
+Remove-CdAlias my-project       # removes my-project.home
+```
+
+---
+
+### `List-CdAliases`
+Show all registered navigation aliases and their target paths.
+
+```powershell
+List-CdAliases
+
+# Alias              Path
+# -----              ----
+# my-project.home    C:\dev\ps\my-project
+# api-service.home   C:\dev\services\api
+```
+
+---
+
+### `git` (wrapper)
+Transparent wrapper around `git.exe`. After a successful `git clone`, automatically registers a `.home` alias for the cloned repository.
+
+```powershell
+git clone https://github.com/user/my-repo
+# clones into ./my-repo/
+# registers my-repo.home -> C:\current\path\my-repo   (printed in cyan)
+
+my-repo.home        # jump to it from anywhere
+```
+
+**How it detects the clone directory:** Snapshots subdirectories before the clone and diffs afterwards. If exactly one new directory appears, it is registered.  
+**Limitations:** Does not auto-alias if the clone target already existed, if `--bare` or `--separate-git-dir` was used, or if multiple directories were created concurrently. In those cases, use `Quick-CdAlias` manually.
 
 ---
 
@@ -293,7 +354,7 @@ ports 8080      # filter to a specific port number
 
 | Command | Description |
 |---------|-------------|
-| `ll [args]` | `Get-ChildItem -Force` — shows hidden files |
+| `ll [args]` | `Get-ChildItem -Force` - shows hidden files |
 | `la [args]` | Same as `ll` |
 | `mkcd <path>` | Create directory and `cd` into it |
 | `path` | Print each `$env:PATH` entry on its own line, sorted |

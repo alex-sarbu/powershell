@@ -1,4 +1,4 @@
-# head — show first N lines
+# head - show first N lines
 function head {
     param(
         [Parameter(Position=0)][string]$Path,
@@ -13,7 +13,7 @@ function head {
     }
 }
 
-# tail — show last N lines; -f follows the file like tail -f
+# tail - show last N lines; -f follows the file like tail -f
 function tail {
     param(
         [Parameter(Position=0)][string]$Path,
@@ -33,7 +33,7 @@ function tail {
     }
 }
 
-# touch — create file or update its last-write timestamp
+# touch - create file or update its last-write timestamp
 function touch {
     param([Parameter(Mandatory, Position=0)][string[]]$Path)
     foreach ($p in $Path) {
@@ -42,7 +42,7 @@ function touch {
     }
 }
 
-# wc — line / word / character count
+# wc - line / word / character count
 function wc {
     param(
         [Parameter(Position=0)][string]$Path,
@@ -70,7 +70,7 @@ function wc {
     }
 }
 
-# sed — stream editor; supports s<delim>pattern<delim>replacement<delim>[gi]
+# sed - stream editor; supports s<delim>pattern<delim>replacement<delim>[gi]
 # Delimiter can be any single character, e.g. s/foo/bar/g or s|foo|bar|g
 function sed {
     param(
@@ -103,7 +103,7 @@ function sed {
     }
 }
 
-# grep — pattern search; wraps Select-String with Linux-like output
+# grep - pattern search; wraps Select-String with Linux-like output
 function grep {
     param(
         [Parameter(Mandatory, Position=0)][string]$Pattern,
@@ -142,7 +142,7 @@ function grep {
     }
 }
 
-# find — recursive file/directory search
+# find - recursive file/directory search
 # Usage: find [path] [-Name *.ps1] [-Type f|d] [-Mtime -7] [-Depth 2]
 function find {
     param(

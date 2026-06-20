@@ -3,14 +3,14 @@
 Remove-Item Alias:curl -ErrorAction SilentlyContinue
 Remove-Item Alias:wget -ErrorAction SilentlyContinue
 
-# curl — remap PowerShell-style params to curl flags, pass everything else through.
+# curl - remap PowerShell-style params to curl flags, pass everything else through.
 # Must be a plain function (no [CmdletBinding()]) so $args is available and PS
 # never silently absorbs flags. Mapping table:
-#   -Verbose      → -v   (PS common param; curl -V means --version, not verbose)
-#   -Uri <url>    → <url> (Invoke-WebRequest style; positional in curl)
-#   -Method <m>   → -X <m>
-#   -Body <data>  → -d <data>
-#   -OutFile <p>  → -o <p>
+#   -Verbose     -> -v   (PS common param; curl -V means --version, not verbose)
+#   -Uri <url>   -> <url> (Invoke-WebRequest style; positional in curl)
+#   -Method <m>  -> -X <m>
+#   -Body <data> -> -d <data>
+#   -OutFile <p> -> -o <p>
 # Everything else is forwarded verbatim.
 function curl {
     $curlArgs = @()
@@ -27,7 +27,7 @@ function curl {
     curl.exe @curlArgs
 }
 
-# wget — download a URL to a file, defaulting to the URL's basename
+# wget - download a URL to a file, defaulting to the URL's basename
 function wget {
     param(
         [Parameter(Mandatory, Position=0)][string]$Url,
@@ -39,7 +39,7 @@ function wget {
     Invoke-WebRequest -Uri $Url -OutFile $dest
 }
 
-# ifconfig — show active network adapters, IPs, and MAC addresses
+# ifconfig - show active network adapters, IPs, and MAC addresses
 function ifconfig {
     Get-NetAdapter | Where-Object { $_.Status -eq 'Up' } | ForEach-Object {
         $iface = $_
@@ -55,7 +55,7 @@ function ifconfig {
     }
 }
 
-# dig — DNS lookup; wraps Resolve-DnsName with a Linux-style interface
+# dig - DNS lookup; wraps Resolve-DnsName with a Linux-style interface
 # Usage: dig <name> [A|AAAA|MX|NS|TXT|CNAME|...]
 function dig {
     param(
@@ -65,9 +65,9 @@ function dig {
     Resolve-DnsName -Name $Name -Type $Type
 }
 
-# ports — show open ports and the owning processes
-# Usage: ports          — all listening/established TCP/UDP
-#        ports 8080     — only entries involving port 8080
+# ports - show open ports and the owning processes
+# Usage: ports        - all listening/established TCP/UDP
+#        ports 8080   - only entries involving port 8080
 function ports {
     param([Parameter(Position=0)][int]$Port)
     $pattern = if ($PSBoundParameters.ContainsKey('Port')) { ":$Port(\s|$)" } else { '.' }
